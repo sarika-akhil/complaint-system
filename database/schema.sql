@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
     department_id INT,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    recovery_code VARCHAR(100),
     FOREIGN KEY (department_id) REFERENCES departments(id)
 );
 
@@ -73,9 +74,9 @@ INSERT INTO departments (name, location, latitude, longitude) VALUES
 ('Municipal', 'Vijayawada Municipal Corporation', 16.5111, 80.6341);
 
 -- Insert default admin users (Password: admin123)
-INSERT INTO admin_users (department_id, username, password) VALUES 
-(1, 'police_admin', 'admin123'),
-(2, 'medical_admin', 'admin123'),
-(3, 'fire_admin', 'admin123'),
-(4, 'municipal_admin', 'admin123'),
-(NULL, 'main_admin', 'admin123');
+INSERT INTO admin_users (department_id, username, password, recovery_code) VALUES 
+(1, 'police_admin', 'admin123', 'POLICE-SAFE-123'),
+(2, 'medical_admin', 'admin123', 'MEDICAL-SAFE-123'),
+(3, 'fire_admin', 'admin123', 'FIRE-SAFE-123'),
+(4, 'municipal_admin', 'admin123', 'MUNICIPAL-SAFE-123'),
+(NULL, 'main_admin', 'admin123', 'MAIN-SAFE-123');

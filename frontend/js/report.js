@@ -103,12 +103,17 @@ document.getElementById('submitBtn').addEventListener('click', async (e) => {
       document.getElementById('successDistance').innerText = distance;
       
       document.getElementById('successModal').style.display = 'flex';
+    } else if (data.message === 'SESSION_EXPIRED') {
+      // Stale localStorage — clear session and redirect to login
+      localStorage.clear();
+      alert('Your session has expired. Please log in again.');
+      window.location.href = 'login.html';
     } else {
-      alert("Submission failed: " + data.message);
+      alert('Submission failed: ' + (data.message || 'Unknown error'));
     }
   } catch (error) {
     console.error(error);
-    alert("Error submitting complaint");
+    alert('Network error — make sure the server is running.');
   }
 });
 
@@ -116,20 +121,26 @@ let issuesMap, dummyMarkers = [];
 
 function showIssuesMap() {
     const modal = document.getElementById('issuesModal');
+    if (!modal) return;
     modal.style.display = 'flex';
     
     const baseCoords = currentCoords || { lat: 16.5062, lon: 80.6480 }; // Fallback to Vijayawada
 
     // Initialize map if not exists
     if (!issuesMap) {
-        issuesMap = L.map('dummyMap').setView([baseCoords.lat, baseCoords.lon], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(issuesMap);
+        const dummyMapEl = document.getElementById('dummyMap');
+        if (dummyMapEl) {
+            issuesMap = L.map('dummyMap').setView([baseCoords.lat, baseCoords.lon], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(issuesMap);
+        }
     } else {
         issuesMap.setView([baseCoords.lat, baseCoords.lon], 14);
         // Clear old markers
         dummyMarkers.forEach(m => issuesMap.removeLayer(m));
         dummyMarkers = [];
     }
+
+    if (!issuesMap) return;
 
     // Dummy Data Generation
     const dummyData = [
@@ -158,7 +169,10 @@ function showIssuesMap() {
 }
 
 function closeIssuesModal() {
-    document.getElementById('issuesModal').style.display = 'none';
+    const modal = document.getElementById('issuesModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 // Global exports

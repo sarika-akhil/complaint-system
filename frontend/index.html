@@ -1,93 +1,227 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Complaint System - AI-Powered Emergency Reporting</title>
-    <link rel="stylesheet" href="css/style.css">
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Complaint - AI-Powered Emergency Response</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c67e7",
+                        "secondary": "#1e293b",
+                        "accent-red": "#ef4444",
+                        "background-light": "#ffffff",
+                        "surface-light": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .feature-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            border-color: #3c67e7;
+            box-shadow: 0 10px 25px -5px rgba(60, 103, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#3c67e7 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            opacity: 0.05;
+        }
+    </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="animate-fade">
-        <div class="logo">Smart<span>Complaint</span></div>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="login.html" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.7rem 2rem;">Login</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="container" style="padding-top: 8vh; padding-bottom: 8vh;">
-        <header class="animate-fade" style="text-align: center; margin-bottom: 5rem;">
-            <h1 style="margin-bottom: 1.5rem;">
-                AI-Powered Emergency<br><span class="gradient-text">Response System</span>
-            </h1>
-            <p style="font-size: 1.15rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 3rem; line-height: 1.7;">
-                Report emergencies and infrastructure issues with precision. Our intelligent system instantly routes your complaint to the right department with 99% accuracy.
-            </p>
-            
-            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                <a href="login.html" class="btn btn-primary">Get Started</a>
-                <a href="#features" class="btn btn-outline">Learn More</a>
-            </div>
-        </header>
-
-        <!-- Features Grid -->
-        <section id="features" class="dashboard-grid animate-fade" style="animation-delay: 0.2s; margin-top: 5rem;">
-            <div class="glass-card">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
-                <h3>AI Intelligence</h3>
-                <p style="color: var(--text-secondary); margin-top: 0.75rem;">Gemini AI instantly categorizes and routes reports to the appropriate department with surgical precision.</p>
-            </div>
-            <div class="glass-card">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📍</div>
-                <h3>Precision GPS</h3>
-                <p style="color: var(--text-secondary); margin-top: 0.75rem;">Real-time geolocation allows emergency services to navigate directly to incidents without delay.</p>
-            </div>
-            <div class="glass-card">
-                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔔</div>
-                <h3>Instant Notifications</h3>
-                <p style="color: var(--text-secondary); margin-top: 0.75rem;">Firebase Cloud Messaging ensures authorities are alerted instantly when serious issues are reported.</p>
-            </div>
-        </section>
-
-        <!-- How It Works Section -->
-        <section id="how-it-works" style="margin-top: 8rem;">
-            <div class="section-title">
-                <h2>How It Works</h2>
-                <p>Simple, fast, and effective emergency reporting in just a few steps</p>
-            </div>
-            <div class="dashboard-grid">
-                <div class="glass-card">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #0369a1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">1️⃣</div>
-                    <h3>Report Issue</h3>
-                    <p style="color: var(--text-secondary); margin-top: 0.75rem;">Describe the emergency or complaint with location details and photos.</p>
+<body class="bg-background-light font-display text-slate-900 selection:bg-primary/20">
+<div class="relative min-h-screen flex flex-col">
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-white text-2xl">emergency_share</span>
+</div>
+<span class="text-xl font-extrabold tracking-tight text-slate-900 uppercase">Smart Complaint</span>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#features">Features</a>
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="#">Safety Protocols</a>
+<a class="text-sm font-semibold text-slate-600 hover:text-primary transition-colors" href="login.html">Login</a>
+<button onclick="window.location.href='login.html'" class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                    Get Started
+                </button>
+</div>
+<button class="md:hidden text-slate-900">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<!-- Hero Section -->
+<main class="flex-grow">
+<section class="relative pt-24 pb-32 px-6 overflow-hidden">
+<div class="absolute inset-0 hero-pattern pointer-events-none"></div>
+<div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center relative z-10">
+<div class="text-center lg:text-left">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-8">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+                        AI-Powered Safety Network
+                    </div>
+<h1 class="text-5xl lg:text-7xl font-black leading-[1.1] mb-8 tracking-tight text-slate-900">
+                        The Future of <br/><span class="text-primary">Emergency Response</span>
+</h1>
+<p class="text-lg lg:text-xl text-slate-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                        An AI-driven ecosystem designed to report emergencies and infrastructure issues with surgical precision, reducing response times by up to 40%.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+<button onclick="window.location.href='login.html'" class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:-translate-y-1 shadow-xl shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">person</span>
+                            Citizen Login
+                        </button>
+<button onclick="window.location.href='login.html?tab=admin'" class="bg-white border-2 border-slate-200 hover:border-primary/30 hover:bg-slate-50 text-slate-900 px-8 py-4 rounded-xl font-bold transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">shield_person</span>
+                            Authority Portal
+                        </button>
+</div>
+</div>
+<div class="hidden lg:block">
+<div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-2xl bg-slate-100 p-2">
+<img alt="Smart Interface Visualization" class="w-full h-auto rounded-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD756Pw_fC450y3dgtpeDBP3uah-BYdU5y6rDHrCbKC-pc-ToGScQK0hUs9MSTlYPexiT23R9mWyyHwPKP4pa1sa8x_WzIpUzNL4Qzth54KSTep2_7WBig7Ysxgv_wcm_AYHnvEhXYAcuNBf_VNmebbWvwtAx2shByqYHCSt96H30GS-6srQDd9U1szs7Hx4vULBkImgikgV4Dd4aaSorCePAzsTORCYvl2NdYvIAX-zUWsjlP39amnjJz70ldCJjJA-Sy8EKc0rdVY"/>
+<div class="absolute bottom-6 left-6 right-6 p-6 bg-white/95 backdrop-blur shadow-xl border border-slate-100 rounded-xl">
+<div class="flex items-center gap-4 mb-4">
+<div class="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-600 text-xl">verified</span>
+</div>
+<div>
+<div class="text-sm font-bold text-slate-900">System Active</div>
+<div class="text-xs text-slate-500 font-medium">99.9% Uptime Monitored</div>
+</div>
+</div>
+<div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-32 px-6 bg-surface-light" id="features">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl lg:text-5xl font-black mb-6 text-slate-900 tracking-tight">Advanced Technology for Public Safety</h2>
+<p class="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                        Our platform leverages cutting-edge AI and cloud infrastructure to minimize response times and maximize efficiency for emergency services.
+                    </p>
+</div>
+<div class="grid md:grid-cols-3 gap-10">
+<!-- AI Intelligence -->
+<div class="feature-card p-10 rounded-2xl flex flex-col gap-8 group">
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">psychology</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-4 text-slate-900">Smart Classification</h3>
+<p class="text-slate-600 leading-relaxed font-medium">
+                                Gemini AI instantly categorizes and routes your report to the appropriate department with 99% accuracy, ensuring no time is wasted.
+                            </p>
+</div>
+</div>
+<!-- Precision GPS -->
+<div class="feature-card p-10 rounded-2xl flex flex-col gap-8 group">
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">location_on</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-4 text-slate-900">Real-time Tracking</h3>
+<p class="text-slate-600 leading-relaxed font-medium">
+                                Pinpoint geolocation allows emergency services to navigate directly to the incident without delay, bypassing traditional navigation hurdles.
+                            </p>
+</div>
+</div>
+<!-- Cloud Alerts -->
+<div class="feature-card p-10 rounded-2xl flex flex-col gap-8 group">
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">bolt</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold mb-4 text-slate-900">Instant Notifications</h3>
+<p class="text-slate-600 leading-relaxed font-medium">
+                                Firebase Cloud Messaging ensures that officials are alerted the second a serious issue is reported, with zero latency across all devices.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Stats Section -->
+<section class="py-24 px-6">
+<div class="max-w-7xl mx-auto bg-primary rounded-[2.5rem] p-12 lg:p-24 relative overflow-hidden shadow-2xl shadow-primary/30">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, #fff 1.5px, transparent 1.5px); background-size: 32px 32px;"></div>
+<div class="relative z-10 grid md:grid-cols-3 gap-16 text-center text-white">
+<div>
+<div class="text-6xl font-black mb-3">99%</div>
+<div class="text-white/80 font-bold uppercase tracking-[0.2em] text-sm">AI Accuracy</div>
+</div>
+<div class="border-y md:border-y-0 md:border-x border-white/20 py-12 md:py-0">
+<div class="text-6xl font-black mb-3">&lt;2s</div>
+<div class="text-white/80 font-bold uppercase tracking-[0.2em] text-sm">Latency Speed</div>
+</div>
+<div>
+<div class="text-6xl font-black mb-3">24/7</div>
+<div class="text-white/80 font-bold uppercase tracking-[0.2em] text-sm">Active Monitoring</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="border-t border-slate-200 py-16 px-6 bg-white">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="bg-slate-900 p-1.5 rounded-lg">
+<span class="material-symbols-outlined text-white text-xl">emergency_share</span>
+</div>
+<span class="text-lg font-black tracking-tighter uppercase text-slate-900">Smart Complaint</span>
+</div>
+<div class="text-slate-500 text-sm font-medium">
+                    © 2024 Smart Complaint. Advancing Public Safety via AI.
                 </div>
-                <div class="glass-card">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #0369a1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2️⃣</div>
-                    <h3>AI Classification</h3>
-                    <p style="color: var(--text-secondary); margin-top: 0.75rem;">Our AI automatically categorizes and determines the right department.</p>
-                </div>
-                <div class="glass-card">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #0369a1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">3️⃣</div>
-                    <h3>Live Tracking</h3>
-                    <p style="color: var(--text-secondary); margin-top: 0.75rem;">Track your complaint in real-time and receive regular updates.</p>
-                </div>
-                <div class="glass-card">
-                    <div style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #0369a1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">4️⃣</div>
-                    <h3>Resolution</h3>
-                    <p style="color: var(--text-secondary); margin-top: 0.75rem;">Receive confirmation and updates until your issue is resolved.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section style="margin-top: 8rem; text-align: center; padding: 3rem; background: linear-gradient(135deg, #0369a1 0%, #06b6d4 100%); border-radius: 1rem; color: white;">
-            <h2 style="color: white; margin-bottom: 1rem;">Ready to Report?</h2>
-            <p style="margin-bottom: 2rem; opacity: 0.95;">Start reporting emergencies and complaints today</p>
-            <a href="login.html" class="btn btn-primary" style="background: white; color: #0369a1;">Access Portal</a>
-        </section>
-    </div>
-</body>
-</html>
+<div class="flex gap-8">
+<a class="text-sm font-bold text-slate-600 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm font-bold text-slate-600 hover:text-primary transition-colors" href="#">Terms of Use</a>
+<a class="text-sm font-bold text-slate-600 hover:text-primary transition-colors" href="#">Contact Us</a>
+</div>
+</div>
+<div class="mt-12 pt-8 border-t border-slate-100 flex flex-wrap justify-center gap-6">
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="text-xs font-bold uppercase tracking-widest">Secure Data Encryption</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">public</span>
+<span class="text-xs font-bold uppercase tracking-widest">Global Safety Standards</span>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

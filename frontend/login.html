@@ -327,7 +327,40 @@
                 <div id="adminMsg" class="form-message"></div>
 
                 <div class="form-footer">
-                    <a href="#">Forgot password?</a>
+                    <a href="javascript:showRecoveryForm()">Forgot password?</a>
+                </div>
+            </form>
+
+            <!-- Admin Password Recovery Form -->
+            <form id="recoveryForm" class="form-content">
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <h3 style="margin: 0 0 0.5rem 0; font-weight: 700; color: var(--text-primary);">Reset Admin Password</h3>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Enter your Employee ID and Recovery Code to set a new password.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="recoveryUsername">Employee ID</label>
+                    <input type="text" id="recoveryUsername" placeholder="Enter your employee ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="recoveryCode">Recovery Code</label>
+                    <input type="text" id="recoveryCode" placeholder="XXXX-XXXX-XXXX" required style="text-transform: uppercase;">
+                </div>
+
+                <div class="form-group">
+                    <label for="recoveryNewPassword">New Password</label>
+                    <input type="password" id="recoveryNewPassword" placeholder="Minimum 6 characters" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Reset Password</button>
+                <div id="recoveryMsg" class="form-message"></div>
+
+                <div class="form-footer" style="margin-top: 1.5rem;">
+                    <a href="javascript:showAdminLogin()" style="font-weight: 700; color: var(--primary);">← Back to Sign In</a>
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-dim); margin-top: 1rem;">
+                        Forgot recovery key? Contact Main Admin support at support@complaint.gov
+                    </span>
                 </div>
             </form>
 
@@ -338,19 +371,34 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <!-- Email OTP login (no Firebase needed) -->
     
     <script src="js/location.js"></script>
     <script src="js/auth.js"></script>
 
     <script>
+        function showRecoveryForm() {
+            document.getElementById('citizenForm').classList.remove('active');
+            document.getElementById('adminForm').classList.remove('active');
+            document.getElementById('recoveryForm').classList.add('active');
+            
+            const tabs = document.querySelectorAll('.form-tabs button');
+            tabs[0].classList.remove('active');
+            tabs[1].classList.remove('active');
+        }
+
+        function showAdminLogin() {
+            document.getElementById('recoveryForm').classList.remove('active');
+            switchAuthTab('admin');
+        }
+
         function switchAuthTab(tab) {
             const citizenForm = document.getElementById('citizenForm');
             const adminForm = document.getElementById('adminForm');
+            const recoveryForm = document.getElementById('recoveryForm');
             const tabs = document.querySelectorAll('.form-tabs button');
             
+            recoveryForm.classList.remove('active');
             if (tab === 'citizen') {
                 citizenForm.classList.add('active');
                 adminForm.classList.remove('active');
@@ -362,6 +410,12 @@
                 tabs[0].classList.remove('active');
                 tabs[1].classList.add('active');
             }
+        }
+
+        // Auto-switch to admin tab if URL has ?tab=admin
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'admin') {
+            switchAuthTab('admin');
         }
     </script>
 </body>

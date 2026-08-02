@@ -31,7 +31,6 @@ class MapService {
           const dist = this.calculateDistance(userLat, userLon, dept.latitude, dept.longitude);
           if (dist < minDistance) {
             minDistance = dist;
-            // Map 'location' to 'name' for consistent nearest object structure
             nearest = { id: dept.id, name: dept.location, lat: dept.latitude, lon: dept.longitude, distance: dist.toFixed(2) };
           }
         }
@@ -44,44 +43,66 @@ class MapService {
     }
   }
 
+  /**
+   * Find nearest authority using OpenStreetMap Nominatim (free, no API key needed).
+   * Uses the Overpass API to search for nearby amenities.
+   */
   static async findNearestAuthority(lat, lon, department) {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
-      return null; 
-    }
-
-    const typeMapping = {
+    const amenityMapping = {
       'Police': 'police',
       'Medical': 'hospital',
       'Fire': 'fire_station',
-      'Municipal': 'city_hall'
+      'Municipal': 'townhall'
     };
 
-    const type = typeMapping[department] || 'establishment';
+    const amenity = amenityMapping[department] || 'government';
+
+    // Overpass API query: find nearest amenity within 5km
+    const overpassQuery = `
+      [out:json][timeout:10];
+      (
+        node["amenity"="${amenity}"](around:5000,${lat},${lon});
+        way["amenity"="${amenity}"](around:5000,${lat},${lon});
+      );
+      out center 1;
+    `;
 
     try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=5000&type=${type}&key=${apiKey}`
+      const response = await axios.post(
+        'https://overpass-api.de/api/interpreter',
+        overpassQuery,
+        {
+          headers: { 'Content-Type': 'text/plain' },
+          timeout: 12000
+        }
       );
 
-      if (response.data.results && response.data.results.length > 0) {
-        const place = response.data.results[0];
-        return {
-          name: place.name,
-          address: place.vicinity,
-          lat: place.geometry.location.lat,
-          lon: place.geometry.location.lng
-        };
+      const elements = response.data.elements;
+      if (elements && elements.length > 0) {
+        const place = elements[0];
+        const placeLat = place.lat || place.center?.lat;
+        const placeLon = place.lon || place.center?.lon;
+        const placeName = place.tags?.name || `Nearest ${department} Station`;
+
+        if (placeLat && placeLon) {
+          return {
+            name: placeName,
+            lat: placeLat,
+            lon: placeLon
+          };
+        }
       }
       return null;
     } catch (error) {
-      console.error("Maps API Error:", error);
+      // Overpass may be slow/unavailable - silently fall back to DB
+      console.warn(`Overpass API unavailable for ${department} lookup, using DB fallback.`);
       return null;
     }
   }
 
-  static getNavigationLink(destLat, destLon) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLon}`;
+  static getNavigationLink(startLat, startLon, destLat, destLon) {
+    // Return complete routing path from incident (start) to station (destination) using OpenStreetMap (URL Encoded)
+    return `https://www.openstreetmap.org/directions?route=${startLat}%2C${startLon}%3B${destLat}%2C${destLon}`;
   }
 }
 

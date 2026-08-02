@@ -7,8 +7,20 @@ const Admin = require('../models/adminModel');
 exports.submit = async (req, res) => {
   const { userId, description, latitude, longitude } = req.body;
   const imagePath = req.file ? `uploads/${req.file.filename}` : null;
-  
+
+  // Validate required fields
+  if (!userId || !description || !latitude || !longitude) {
+    return res.status(400).json({ success: false, message: 'Missing required fields.' });
+  }
+
   try {
+    // 0. Verify userId still exists in DB (catches stale localStorage sessions)
+    const db = require('../config/db');
+    const [userCheck] = await db.execute('SELECT id FROM users WHERE id = ?', [userId]);
+    if (userCheck.length === 0) {
+      return res.status(401).json({ success: false, message: 'SESSION_EXPIRED' });
+    }
+
     // 1. AI Classification
     const category = await AIService.classifyComplaint(description);
     
@@ -40,13 +52,15 @@ exports.submit = async (req, res) => {
       nearestStation: nearest
     });
 
-    const navLink = MapService.getNavigationLink(latitude, longitude);
+    const navLink = nearest 
+      ? MapService.getNavigationLink(latitude, longitude, nearest.lat, nearest.lon)
+      : `https://www.openstreetmap.org/directions?to=${latitude},${longitude}`;
 
     // 5. Send Notification
     const alertPayload = {
       title: `Emergency Alert: ${category}`,
       body: `New incident reported. Location: ${latitude}, ${longitude}. Description: ${description}`,
-      locationLink: `https://www.google.com/maps?q=${latitude},${longitude}`,
+      locationLink: `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`,
       navLink: navLink,
       proximity: nearest ? `${nearest.distance} km` : 'N/A',
       stationName: nearest ? nearest.name : 'Unknown'

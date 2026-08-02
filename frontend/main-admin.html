@@ -82,6 +82,64 @@
                 <h1 style="margin-bottom: 0.5rem;">Command Center</h1>
                 <p style="color: var(--text-secondary); font-size: 1.05rem;">Real-time monitoring of all emergency reports</p>
             </div>
+            <div>
+                <button onclick="toggleAdminPanel()" class="btn btn-primary" style="font-weight: 700; padding: 0.8rem 1.5rem;">⚙️ Manage Admins & Branches</button>
+            </div>
+        </div>
+
+        <!-- Manage Admins & Branches Collapsible Panel -->
+        <div id="adminPanel" class="metric-card animate-fade" style="display: none; text-align: left; margin-bottom: 3rem; max-width: 600px; padding: 2rem; margin-left: auto; margin-right: auto; box-shadow: var(--card-shadow); border: 1px solid var(--border-light); border-radius: 1rem;">
+            <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: 700; color: var(--text-primary);">Create New Branch & Administrator</h2>
+            <form id="createBranchAdminForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="input-group">
+                        <label for="branchCategory" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Department Category</label>
+                        <select id="branchCategory" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); font-weight: 600; font-family: 'Inter', sans-serif;">
+                            <option value="Police">Police</option>
+                            <option value="Medical">Medical</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Municipal">Municipal</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="branchLocation" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Branch Address / Name</label>
+                        <input type="text" id="branchLocation" placeholder="e.g. Gachibowli Police Station" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="input-group">
+                        <label for="branchLat" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Latitude</label>
+                        <input type="number" step="any" id="branchLat" placeholder="e.g. 17.4411" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); box-sizing: border-box;">
+                    </div>
+                    <div class="input-group">
+                        <label for="branchLon" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Longitude</label>
+                        <input type="number" step="any" id="branchLon" placeholder="e.g. 78.3822" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="input-group">
+                        <label for="newAdminUsername" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Admin Username</label>
+                        <input type="text" id="newAdminUsername" placeholder="e.g. gachibowli_police" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); box-sizing: border-box;">
+                    </div>
+                    <div class="input-group">
+                        <label for="newAdminPassword" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Admin Password</label>
+                        <input type="password" id="newAdminPassword" placeholder="Minimum 6 chars" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 1.5rem;">
+                    <label for="newAdminRecoveryCode" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">Admin Recovery Code (for password reset)</label>
+                    <input type="text" id="newAdminRecoveryCode" placeholder="e.g. GACHIBOWLI-SAFE-123" required style="width: 100%; padding: 0.8rem; border-radius: 0.5rem; border: 1.5px solid var(--border-light); text-transform: uppercase; box-sizing: border-box;">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 0.8rem;">Create Branch & Account</button>
+                    <button type="button" onclick="toggleAdminPanel()" class="btn btn-outline" style="flex: 1; padding: 0.8rem;">Cancel</button>
+                </div>
+                <div id="createBranchAdminMsg" class="form-message" style="margin-top: 1rem;"></div>
+            </form>
         </div>
 
         <!-- Quick Metrics -->
@@ -141,8 +199,62 @@
         </div>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script src="js/admin.js?v=1.1"></script>
     <script>
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('createBranchAdminMsg').className = 'form-message';
+            document.getElementById('createBranchAdminMsg').innerText = '';
+        }
+
+        document.getElementById('createBranchAdminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('createBranchAdminMsg');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            const payload = {
+                branchCategory: document.getElementById('branchCategory').value,
+                branchLocation: document.getElementById('branchLocation').value.trim(),
+                branchLat: parseFloat(document.getElementById('branchLat').value),
+                branchLon: parseFloat(document.getElementById('branchLon').value),
+                adminUsername: document.getElementById('newAdminUsername').value.trim(),
+                adminPassword: document.getElementById('newAdminPassword').value,
+                adminRecoveryCode: document.getElementById('newAdminRecoveryCode').value.trim().toUpperCase()
+            };
+
+            msg.innerText = '';
+            msg.className = 'form-message';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_BASE + '/api/admin/create-branch-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                submitBtn.disabled = false;
+
+                if (data.success) {
+                    msg.innerText = 'Branch & Administrator created successfully!';
+                    msg.className = 'form-message success';
+                    e.target.reset();
+                    setTimeout(() => {
+                        toggleAdminPanel();
+                    }, 2500);
+                } else {
+                    msg.innerText = data.message || 'Registration failed.';
+                    msg.className = 'form-message error';
+                }
+            } catch (err) {
+                submitBtn.disabled = false;
+                msg.innerText = 'Connection error. Please try again.';
+                msg.className = 'form-message error';
+            }
+        });
+
         async function updateStats() {
             try {
                 const response = await fetch(API_BASE + '/api/admin/complaints');

@@ -1,12 +1,73 @@
 // API Base Configuration
 const API_BASE = 'http://localhost:5000';
 
-// Session Guard
+// Session Guard & Role-Based Access Control
 (function() {
   const adminId = localStorage.getItem('adminId');
-  if (!adminId && !window.location.pathname.includes('login.html')) {
+  const adminDeptId = localStorage.getItem('adminDeptId');
+  const adminDeptName = localStorage.getItem('adminDeptName');
+  const isMainAdmin = !adminDeptId || adminDeptId === 'null';
+  const currentPath = window.location.pathname;
+
+  // 1. Authentication Check
+  if (!adminId && !currentPath.includes('login.html')) {
     window.location.href = 'login.html';
+    return;
   }
+
+  // Detect stale sessions (missing department name metadata for branch admins) and force a logout/refresh
+  if (adminId && !isMainAdmin && !adminDeptName) {
+    console.warn("[Guard] Stale admin session detected. Clearing storage to refresh metadata.");
+    localStorage.clear();
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // 2. Authorization Check (Route Guard)
+  if (adminId && !isMainAdmin && adminDeptName) {
+    const routes = {
+      'Police': 'police-admin.html',
+      'Medical': 'medical-admin.html',
+      'Fire': 'fire-admin.html',
+      'Municipal': 'municipal-admin.html'
+    };
+
+    const allowedPage = routes[adminDeptName];
+    if (allowedPage && !currentPath.includes(allowedPage)) {
+      console.warn(`[Guard] Access denied to ${currentPath}. Redirecting to ${allowedPage}.`);
+      window.location.href = allowedPage;
+      return;
+    }
+  }
+
+  // 3. Navigation Clean-up (Run after DOM is loaded)
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks && !isMainAdmin && adminDeptName) {
+      const links = navLinks.querySelectorAll('a');
+      const routes = {
+        'Police': 'police-admin.html',
+        'Medical': 'medical-admin.html',
+        'Fire': 'fire-admin.html',
+        'Municipal': 'municipal-admin.html'
+      };
+
+      const allowedPage = routes[adminDeptName];
+
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        const isAllowed = href && href.includes(allowedPage);
+        const isLogout = href && href.includes('logout');
+
+        if (!isAllowed && !isLogout) {
+          link.style.display = 'none'; // Hide other departments and main dashboard
+        } else if (isAllowed) {
+          link.innerText = 'Dashboard'; // Simplify tab name to just "Dashboard"
+          link.className = 'active';
+        }
+      });
+    }
+  });
 })();
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -21,9 +82,10 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return (R * c).toFixed(2);
 }
 
-async function loadAdminComplaints(deptId = null) {
+async function loadAdminComplaints(deptId = null, targetCategory = null) {
   try {
-    const url = deptId ? `${API_BASE}/api/admin/complaints?departmentId=${deptId}` : `${API_BASE}/api/admin/complaints`;
+    const validDeptId = (deptId && deptId !== 'null' && deptId !== 'undefined') ? deptId : null;
+    const url = validDeptId ? `${API_BASE}/api/admin/complaints?departmentId=${validDeptId}` : `${API_BASE}/api/admin/complaints`;
     const response = await fetch(url);
     const data = await response.json();
     
@@ -31,11 +93,17 @@ async function loadAdminComplaints(deptId = null) {
     const categoryMap = {
       'Police': 'policeComplaints',
       'Municipal': 'municipalComplaints',
-      'Medical': 'medicalComplaints'
+      'Medical': 'medicalComplaints',
+      'Fire': 'fireComplaints'
     };
 
-    // Reset all containers if viewing Main Admin
-    if (!deptId) {
+    let count = 0;
+
+    // Reset containers
+    if (targetCategory) {
+      const container = document.getElementById('adminComplaints');
+      if (container) container.innerHTML = '';
+    } else if (!validDeptId) {
       Object.keys(categoryMap).forEach(cat => {
         const id = categoryMap[cat];
         const el = document.getElementById(id);
@@ -50,6 +118,12 @@ async function loadAdminComplaints(deptId = null) {
     }
 
     data.complaints.forEach(c => {
+      // Filter out complaints that do not match the target category for single department pages
+      if (targetCategory && c.category && c.category.toLowerCase() !== targetCategory.toLowerCase()) {
+        return;
+      }
+
+      count++;
       const distance = calculateDistance(c.latitude, c.longitude, c.dept_lat, c.dept_lon);
       const card = document.createElement('div');
       card.className = 'complaint-card glass-card';
@@ -67,8 +141,8 @@ async function loadAdminComplaints(deptId = null) {
         </div>
         
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" class="btn btn-primary" style="font-size: 0.7rem; padding: 0.5rem 1rem;">View Map</a>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${c.latitude},${c.longitude}" target="_blank" class="btn" style="font-size: 0.7rem; background: var(--secondary); color: white; padding: 0.5rem 1rem;">Navigate</a>
+          <a href="https://www.openstreetmap.org/?mlat=${c.latitude}&mlon=${c.longitude}#map=17/${c.latitude}/${c.longitude}" target="_blank" class="btn btn-primary" style="font-size: 0.7rem; padding: 0.5rem 1rem;">View Map</a>
+          <a href="https://www.openstreetmap.org/directions?route=${c.latitude}%2C${c.longitude}%3B${c.dept_lat}%2C${c.dept_lon}#map=14/${c.latitude}/${c.longitude}" target="_blank" class="btn" style="font-size: 0.7rem; background: var(--secondary); color: white; padding: 0.5rem 1rem;">Navigate</a>
           
           <select onchange="updateStatus(${c.id}, this.value)" style="width: auto; padding: 0.4rem; font-weight: 700; font-size: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-light);">
             <option value="Pending" ${c.status==='Pending'?'selected':''}>Pending</option>
@@ -76,30 +150,30 @@ async function loadAdminComplaints(deptId = null) {
             <option value="Resolved" ${c.status==='Resolved'?'selected':''}>Resolved</option>
           </select>
           
-          ${!deptId ? `<button onclick="showReassign(${c.id})" class="btn" style="font-size: 0.7rem; background: #e2e8f0; color: #475569; padding: 0.5rem 1rem;">Reassign</button>` : ''}
+          ${!validDeptId ? `<button onclick="showReassign(${c.id})" class="btn" style="font-size: 0.7rem; background: #e2e8f0; color: #475569; padding: 0.5rem 1rem;">Reassign</button>` : ''}
         </div>
       `;
 
-      if (!deptId) {
+      if (targetCategory || validDeptId) {
+        const container = document.getElementById('adminComplaints');
+        if (container) container.appendChild(card);
+      } else {
         const containerId = categoryMap[c.category] || 'policeComplaints';
         const sectionId = containerId.replace('Complaints', 'Section');
         const container = document.getElementById(containerId);
         const section = document.getElementById(sectionId);
         if (container) container.appendChild(card);
         if (section) section.style.display = 'block';
-      } else {
-        const container = document.getElementById('adminComplaints');
-        if (container) container.appendChild(card);
       }
     });
 
-    if (data.complaints.length === 0) {
+    if (count === 0) {
       const msg = document.createElement('p');
       msg.style.padding = '2rem';
       msg.style.textAlign = 'center';
       msg.style.color = 'var(--text-dim)';
       msg.innerText = 'No active incidents reported.';
-      if (deptId) {
+      if (targetCategory || validDeptId) {
          const container = document.getElementById('adminComplaints');
          if (container) container.appendChild(msg);
       } else {

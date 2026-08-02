@@ -33,9 +33,10 @@ class Complaint {
 
   static async findByDepartment(departmentId) {
     const [rows] = await db.execute(`
-      SELECT c.*, u.phone as user_phone, 
+      SELECT c.*, u.phone as user_phone, d.name as department_name,
              COALESCE(c.nearest_station_lat, d.latitude) as dept_lat, 
-             COALESCE(c.nearest_station_lon, d.longitude) as dept_lon
+             COALESCE(c.nearest_station_lon, d.longitude) as dept_lon,
+             COALESCE(c.nearest_station_name, d.location) as dept_name
       FROM complaints c
       JOIN users u ON c.user_id = u.id
       JOIN departments d ON c.department_id = d.id
