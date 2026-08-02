@@ -1,6 +1,6 @@
 let map, marker;
 let currentCoords = null;
-const API_BASE = window.location.port !== '5000' ? 'http://localhost:5000' : '';
+const API_BASE = 'https://smartcomplaint-system-api.onrender.com';
 
 // Initialize Map
 async function initMap() {

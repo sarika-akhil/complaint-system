@@ -1,5 +1,5 @@
-// API Base Configuration - Auto-detect port 5000
-const API_BASE = 'http://localhost:5000';
+// API Base Configuration
+const API_BASE = 'https://smartcomplaint-system-api.onrender.com';
 
 // Debug: Log API calls
 const makeAPI = async (endpoint, options = {}) => {

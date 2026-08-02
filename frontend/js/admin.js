@@ -1,5 +1,5 @@
 // API Base Configuration
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://smartcomplaint-system-api.onrender.com';
 
 // Session Guard & Role-Based Access Control
 (function() {
