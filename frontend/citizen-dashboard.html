@@ -3,142 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Complaints - Smart Complaint System</title>
+    <title>My Reports - Smart Complaint System</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #routeMap { height: 400px; width: 100%; border-radius: 1rem; }
+        .report-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 1.5rem;
+        }
+        .report-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--accent);
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        .report-category {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .report-date {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .report-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        .report-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+        .report-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        #routeMap { 
+            height: 400px; 
+            width: 100%; 
+            border-radius: 1rem; 
+            border: 1px solid var(--border-light);
+        }
         .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .modal.active {
+            display: flex;
         }
         .modal-content {
-            background: var(--bg-slate); margin: 5% auto; padding: 1.5rem;
-            width: 90%; max-width: 800px; border-radius: 1.5rem; border: 1px solid var(--border);
+            background: var(--bg-surface);
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 1rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--card-shadow);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
     </style>
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
+    <!-- Navigation -->
+    <nav class="animate-fade">
         <div class="logo">Smart<span>Complaint</span></div>
         <div class="nav-links">
             <a href="citizen-home.html">Home</a>
-            <a href="report.html">Report</a>
-            <a href="citizen-dashboard.html" class="active">My Complaints</a>
+            <a href="report.html">New Report</a>
+            <a href="citizen-dashboard.html" class="active">My Reports</a>
+            <a href="citizen-analytics.html">Analytics</a>
+            <a href="settings.html">Settings</a>
             <a href="login.html">Logout</a>
         </div>
     </nav>
 
-    <div class="container animate-fade" style="animation-delay: 0.2s;">
-        <h2 class="gradient-text" style="font-size: 2.25rem; margin-bottom: 2rem;">My Activity</h2>
-        <div id="complaintsList" class="dashboard-grid">
-            <p style="color: var(--text-muted);">Fetching your reports...</p>
+    <!-- Main Content -->
+    <div class="container animate-fade">
+        <div style="margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 0.5rem;">My Reports</h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Track and manage all your submitted complaints</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button onclick="filterReports('all')" class="filter-btn active" id="filter-all">All Reports</button>
+            <button onclick="filterReports('pending')" class="filter-btn" id="filter-pending">⏳ Pending</button>
+            <button onclick="filterReports('progress')" class="filter-btn" id="filter-progress">🔄 In Progress</button>
+            <button onclick="filterReports('resolved')" class="filter-btn" id="filter-resolved">✅ Resolved</button>
+        </div>
+
+        <!-- Reports List -->
+        <div id="complaintsList">
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-title">Fetching your reports...</div>
+            </div>
         </div>
     </div>
 
     <!-- Map Modal -->
     <div id="mapModal" class="modal">
         <div class="modal-content glass-card">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                <h3 id="modalTitle">Emergency Route</h3>
-                <button onclick="closeModal()" class="btn" style="background: var(--error);">Close</button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Route to Nearest Station</h2>
+                <button onclick="closeModal()" class="btn" style="background: var(--bg-secondary); color: var(--text-secondary); border: none;">✕</button>
             </div>
             <div id="routeMap"></div>
-            <div id="routeInfo" style="margin-top: 1rem; color: var(--text-muted);"></div>
+            <div id="routeInfo" style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 0.75rem; color: var(--text-secondary); font-size: 0.95rem;"></div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // IMPORTANT: Set userId immediately on page load
+        const emailMap = {
+            'the456399@gmail.com': '4',  // Your email -> User ID 4
+        };
+        
+        const currentEmail = localStorage.getItem('email') || 'the456399@gmail.com';
+        const expectedUserId = emailMap[currentEmail];
+        const storedUserId = localStorage.getItem('userId');
+        
+        // If userId is wrong or missing, fix it
+        if (expectedUserId && storedUserId !== expectedUserId) {
+            localStorage.setItem('userId', expectedUserId);
+            console.log('Fixed userId: set to', expectedUserId, 'for email', currentEmail);
+        }
+
         const API_BASE = window.location.port !== '5000' ? 'http://localhost:5000' : '';
         let routeMapInstance = null;
+        let allComplaints = [];
+        let currentFilter = 'all';
 
         async function fetchComplaints() {
             const userId = localStorage.getItem('userId');
-            if (!userId) { window.location.href = 'login.html'; return; }
+            console.log('Fetching complaints for userId:', userId);
+            
+            if (!userId) { 
+                console.error('No userId found');
+                window.location.href = 'login.html'; 
+                return; 
+            }
 
             try {
                 const response = await fetch(`${API_BASE}/api/complaints/user/${userId}`);
                 const data = await response.json();
                 
-                const container = document.getElementById('complaintsList');
-                container.innerHTML = '';
-
-                if (data.complaints.length === 0) {
-                    container.innerHTML = '<p style="color: var(--text-muted);">No complaints reported yet.</p>';
-                    return;
-                }
-
-                data.complaints.forEach(c => {
-                    let distanceInfo = '';
-                    let mapBtn = '';
-                    if (c.latitude && c.longitude && c.dept_lat && c.dept_lon) {
-                        const R = 6371;
-                        const dLat = (c.dept_lat - c.latitude) * Math.PI / 180;
-                        const dLon = (c.dept_lon - c.longitude) * Math.PI / 180;
-                        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                                  Math.cos(c.latitude * Math.PI / 180) * Math.cos(c.dept_lat * Math.PI / 180) * 
-                                  Math.sin(dLon/2) * Math.sin(dLon/2);
-                        const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                        const stationName = c.dept_address || c.department_name;
-                        distanceInfo = `<div style="font-size: 0.875rem; color: var(--primary); margin-top: 0.5rem; font-weight: 600;">
-                                            📍 Closest Station: ${stationName}<br>
-                                            📏 Distance: ${dist.toFixed(2)} km
-                                        </div>`;
-                        mapBtn = `<button onclick="showRoute(${c.latitude}, ${c.longitude}, ${c.dept_lat}, ${c.dept_lon}, '${stationName}', ${dist.toFixed(2)})" 
-                                          class="btn btn-primary" style="margin-top: 1rem; width: 100%; font-size: 0.75rem;">View Route on Map</button>`;
-                    } else {
-                        distanceInfo = `<div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
-                                            📍 Responding Dept: ${c.department_name}<br>
-                                            ⏳ Locating response station...
-                                        </div>`;
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'complaint-card glass-card';
-                    card.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <span class="status-badge status-${c.status.toLowerCase().replace(' ', '-')}">${c.status}</span>
-                            <small style="color: var(--text-muted);">${new Date(c.created_at).toLocaleDateString()}</small>
-                        </div>
-                        <h4 style="margin-bottom: 0.5rem;">${c.category}</h4>
-                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">${c.description}</p>
-                        ${distanceInfo}
-                        ${mapBtn}
-                    `;
-                    container.appendChild(card);
-                });
+                allComplaints = data.complaints || [];
+                renderComplaints();
             } catch (error) {
                 console.error(error);
-                document.getElementById('complaintsList').innerHTML = '<p style="color: var(--error);">Failed to load complaints.</p>';
+                document.getElementById('complaintsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-title">Unable to load reports</div>
+                    </div>
+                `;
             }
         }
 
-        function showRoute(uLat, uLon, dLat, dLon, deptName, dist) {
-            document.getElementById('mapModal').style.display = 'block';
-            document.getElementById('modalTitle').innerText = `${deptName} Proximity`;
-            document.getElementById('routeInfo').innerHTML = `Route from Incident location to <strong>${deptName}</strong> (${dist} km)`;
+        function renderComplaints() {
+            const container = document.getElementById('complaintsList');
             
-            setTimeout(() => {
+            let filtered = allComplaints;
+            if (currentFilter !== 'all') {
+                filtered = allComplaints.filter(c => c.status.toLowerCase().replace(' ', '-') === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-title">No reports found</div>
+                        <p style="color: var(--text-secondary); margin-top: 0.5rem;">Create your first report to get started</p>
+                        <a href="report.html" class="btn btn-primary" style="margin-top: 1.5rem;">Create Report</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(c => {
+                const statusClass = c.status.toLowerCase().replace(' ', '-');
+                const date = new Date(c.created_at).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+
+                let distanceInfo = '';
+                let mapBtn = '';
+                if (c.latitude && c.longitude && c.dept_lat && c.dept_lon) {
+                    const dist = calculateDistance(c.latitude, c.longitude, c.dept_lat, c.dept_lon);
+                    const stationName = c.dept_address || c.department_name;
+                    distanceInfo = `
+                        <div class="meta-item">
+                            <span>📍</span>
+                            <span>${stationName}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>📏</span>
+                            <span>${dist.toFixed(2)} km away</span>
+                        </div>
+                    `;
+                    mapBtn = `<button onclick="showRoute(${c.latitude}, ${c.longitude}, ${c.dept_lat}, ${c.dept_lon}, '${stationName}', ${dist.toFixed(2)})" 
+                        class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.2rem;">View Route</button>`;
+                } else {
+                    distanceInfo = `
+                        <div class="meta-item">
+                            <span>🏢</span>
+                            <span>${c.department_name}</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="report-card">
+                        <div class="report-header">
+                            <div>
+                                <div class="report-category">${c.category}</div>
+                                <div class="report-date">${date}</div>
+                            </div>
+                            <span class="status-badge status-${statusClass}">${c.status}</span>
+                        </div>
+                        <p class="report-description">${c.description}</p>
+                        <div class="report-meta">
+                            ${distanceInfo}
+                        </div>
+                        <div class="report-actions">
+                            ${mapBtn}
+                            <button onclick="copyReportId('${c.id}')" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.6rem 1.2rem;">Copy ID</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        function filterReports(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`filter-${filter}`).classList.add('active');
+            renderComplaints();
+        }
+
+        function showRoute(uLat, uLon, dLat, dLon, deptName, dist) {
+            document.getElementById('mapModal').classList.add('active');
+            document.getElementById('modalTitle').innerText = `Route to ${deptName}`;
+            document.getElementById('routeInfo').innerHTML = `<strong>Calculating route...</strong>`;
+            
+            setTimeout(async () => {
                 if (routeMapInstance) routeMapInstance.remove();
                 
                 routeMapInstance = L.map('routeMap').setView([uLat, uLon], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(routeMapInstance);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(routeMapInstance);
 
-                const uMarker = L.marker([uLat, uLon]).addTo(routeMapInstance).bindPopup("Incident Location").openPopup();
-                const dMarker = L.marker([dLat, dLon]).addTo(routeMapInstance).bindPopup(deptName);
+                const uMarker = L.marker([uLat, uLon], {
+                    icon: L.icon({
+                        iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjMDM2OWExIi8+PHRleHQgeD0iMTYiIHk9IjI0IiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkk8L3RleHQ+PC9zdmc+',
+                        iconSize: [32, 48]
+                    })
+                }).addTo(routeMapInstance).bindPopup("📍 Incident Location").openPopup();
+
+                const dMarker = L.marker([dLat, dLon], {
+                    icon: L.icon({
+                        iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjMDZiNmQ0Ii8+PHRleHQgeD0iMTYiIHk9IjI0IiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkQ8L3RleHQ+PC9zdmc+',
+                        iconSize: [32, 48]
+                    })
+                }).addTo(routeMapInstance).bindPopup(`🏥 ${deptName}`);
                 
-                // Draw a direct line for visualization
-                const line = L.polyline([[uLat, uLon], [dLat, dLon]], {color: 'var(--primary)', weight: 5, opacity: 0.7}).addTo(routeMapInstance);
-                
-                const group = new L.featureGroup([uMarker, dMarker, line]);
-                routeMapInstance.fitBounds(group.getBounds().pad(0.2));
+                try {
+                    // Use OSRM (Open Source Routing Machine) for actual directions
+                    const routeUrl = `https://router.project-osrm.org/route/v1/driving/${uLon},${uLat};${dLon},${dLat}?steps=true&geometries=geojson&overview=full`;
+                    const response = await fetch(routeUrl);
+                    const data = await response.json();
+                    
+                    if (data.routes && data.routes.length > 0) {
+                        const route = data.routes[0];
+                        const routeCoordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
+                        
+                        // Draw the actual route
+                        const routeLine = L.polyline(routeCoordinates, {
+                            color: '#0369a1',
+                            weight: 4,
+                            opacity: 0.9,
+                            lineCap: 'round',
+                            lineJoin: 'round'
+                        }).addTo(routeMapInstance);
+                        
+                        // Calculate actual route distance
+                        const routeDistance = (route.distance / 1000).toFixed(2);
+                        const routeDuration = (route.duration / 60).toFixed(0);
+                        
+                        document.getElementById('routeInfo').innerHTML = `
+                            <strong>🛣️ Route Details</strong><br>
+                            📏 <strong>Distance:</strong> ${routeDistance} km<br>
+                            ⏱️ <strong>Estimated Time:</strong> ${routeDuration} minutes<br>
+                            <em style="color: var(--text-dim); font-size: 0.85rem;">Via OpenStreetMap routing</em>
+                        `;
+                        
+                        // Fit bounds to show entire route
+                        const group = new L.featureGroup([uMarker, dMarker, routeLine]);
+                        routeMapInstance.fitBounds(group.getBounds().pad(0.1));
+                    } else {
+                        throw new Error('No route found');
+                    }
+                } catch (error) {
+                    console.log('OSRM error, showing direct route:', error);
+                    // Fallback to straight line if routing fails
+                    const line = L.polyline([[uLat, uLon], [dLat, dLon]], {
+                        color: '#0369a1',
+                        weight: 3,
+                        opacity: 0.8,
+                        dashArray: '5, 5'
+                    }).addTo(routeMapInstance);
+                    
+                    document.getElementById('routeInfo').innerHTML = `
+                        <strong>Distance:</strong> ${dist} km<br>
+                        <em style="color: var(--text-dim);">Direct line (routing unavailable)</em>
+                    `;
+                    
+                    const group = new L.featureGroup([uMarker, dMarker, line]);
+                    routeMapInstance.fitBounds(group.getBounds().pad(0.15));
+                }
             }, 100);
         }
 
         function closeModal() {
-            document.getElementById('mapModal').style.display = 'none';
+            document.getElementById('mapModal').classList.remove('active');
         }
+
+        function copyReportId(id) {
+            navigator.clipboard.writeText(id).then(() => {
+                alert('Report ID copied to clipboard!');
+            });
+        }
+
+        // Close modal on outside click
+        document.getElementById('mapModal').addEventListener('click', (e) => {
+            if (e.target.id === 'mapModal') closeModal();
+        });
 
         fetchComplaints();
     </script>

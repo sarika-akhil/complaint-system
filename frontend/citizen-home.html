@@ -7,172 +7,283 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .action-card {
-            background: white;
+        .stat-card {
+            background: var(--bg-surface);
             border: 1px solid var(--border-light);
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
-            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .action-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: var(--text-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            gap: 1rem;
         }
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        .action-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-hover);
             border-color: var(--primary);
         }
         .action-icon {
+            font-size: 2.5rem;
+        }
+        .action-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .action-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .emergency-box {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            margin-top: 2rem;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+        }
+        .emergency-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
         }
-        .action-title {
+        .emergency-title {
             font-size: 1.25rem;
             font-weight: 800;
             margin-bottom: 0.5rem;
         }
-        .action-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        .emergency-desc {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            margin-bottom: 1.5rem;
         }
-        .helpline-box {
-            background: #fff0f2;
-            border: 1px solid #ffe4e6;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: center;
-            margin-top: 2rem;
-        }
-        .helpline-title {
-            color: #be123c;
-            font-weight: 900;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-        .helpline-number {
-            font-size: 1.5rem;
+        .emergency-number {
+            font-size: 1.8rem;
             font-weight: 800;
-            color: #9f1239;
-        }
-        .helpline-email {
-            font-size: 1rem;
-            color: #9f1239;
-            font-weight: 600;
-            margin-top: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
+    <nav class="animate-fade">
         <div class="logo">Smart<span>Complaint</span></div>
         <div class="nav-links">
             <a href="citizen-home.html" class="active">Home</a>
-            <a href="citizen-dashboard.html">My Complaints</a>
+            <a href="citizen-dashboard.html">My Reports</a>
+            <a href="citizen-analytics.html">Analytics</a>
+            <a href="settings.html">Settings</a>
             <a href="login.html">Logout</a>
         </div>
     </nav>
 
-    <div class="container animate-fade" style="padding: 2rem 1rem; max-width: 1000px; animation-delay: 0.2s;">
-        
-        <h1 class="gradient-text" style="font-weight: 900; font-size: 2.5rem; margin-bottom: 0.5rem;">Citizen Dashboard</h1>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-weight: 500; font-size: 1.1rem;">Welcome back. What would you like to do?</p>
-
-        <div class="dashboard-grid">
-            <!-- Send Report -->
-            <a href="report.html" class="action-card">
-                <div class="action-icon">🚨</div>
-                <div class="action-title">Send a Report</div>
-                <div class="action-desc">Report an emergency, accident, or hazard immediately.</div>
-            </a>
-
-            <!-- Track Reports -->
-            <a href="citizen-dashboard.html" class="action-card">
-                <div class="action-icon">📋</div>
-                <div class="action-title">Track My Reports</div>
-                <div class="action-desc">View the status of your past reports and complaints.</div>
-            </a>
+    <div class="container animate-fade">
+        <!-- Header -->
+        <div style="margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 0.5rem;">Welcome Back!</h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Quickly report issues or track your complaints</p>
         </div>
 
-        <!-- Live Issues Map Section -->
-        <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="font-weight: 800; color: var(--text-primary);">Live Incidents Near You</h2>
-                <span style="background: #fee2e2; color: #dc2626; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 700;">Live</span>
+        <!-- Quick Stats -->
+        <div class="dashboard-grid" style="margin-bottom: 3rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-active">-</div>
+                <div class="stat-label">Active Reports</div>
             </div>
-            <!-- Reusing the map logic from report.js -->
-            <div id="dummyMap" style="height: 400px; border-radius: 1rem; border: 1px solid var(--border-light); width: 100%;"></div>
-            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 600;">Showing active reports in your vicinity. Stay safe!</p>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-resolved">-</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-progress">-</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-rate">-</div>
+                <div class="stat-label">Resolution Rate</div>
+            </div>
         </div>
 
-        <!-- Helpline Section -->
-        <div class="helpline-box animate-fade" style="animation-delay: 0.4s;">
-            <div class="helpline-title">⚠️ National Emergency Helpline</div>
-            <div class="helpline-number">📞 112</div>
-            <div class="helpline-email">✉️ support@smartcomplaint.gov.in</div>
+        <!-- Quick Actions -->
+        <div style="margin-bottom: 3rem;">
+            <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Quick Actions</h2>
+            <div class="quick-actions">
+                <a href="report.html" class="action-btn">
+                    <div class="action-icon">🚨</div>
+                    <div class="action-title">New Report</div>
+                    <div class="action-desc">Report an emergency</div>
+                </a>
+                <a href="citizen-dashboard.html" class="action-btn">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">My Reports</div>
+                    <div class="action-desc">Track complaints</div>
+                </a>
+                <a href="citizen-analytics.html" class="action-btn">
+                    <div class="action-icon">📊</div>
+                    <div class="action-title">Analytics</div>
+                    <div class="action-desc">View statistics</div>
+                </a>
+                <a href="#" class="action-btn">
+                    <div class="action-icon">⚙️</div>
+                    <div class="action-title">Settings</div>
+                    <div class="action-desc">Manage account</div>
+                </a>
+            </div>
         </div>
 
+        <!-- Live Incidents Map -->
+        <div class="glass-card" style="margin-bottom: 3rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;">Nearby Incidents</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Real-time view of reports in your area</p>
+            </div>
+            <div id="dummyMap" style="height: 450px; border-radius: 1rem; border: 1px solid var(--border-light); width: 100%; overflow: hidden;"></div>
+        </div>
+
+        <!-- Emergency Info -->
+        <div class="emergency-box animate-fade">
+            <div class="emergency-icon">🆘</div>
+            <div class="emergency-title">National Emergency Helpline</div>
+            <div class="emergency-desc">For life-threatening emergencies, call:</div>
+            <div class="emergency-number">112</div>
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.9;">Available 24/7 for police, fire, medical, and disaster relief</p>
+        </div>
+
+        <!-- Footer Info -->
+        <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 1rem; text-align: center;">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Questions? <a href="#" style="color: var(--primary); font-weight: 700; text-decoration: none;">Visit Help Center</a></p>
+            <p style="color: var(--text-dim); font-size: 0.85rem;">© 2024 Smart Complaint System. All reports are securely stored and confidential.</p>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/location.js"></script>
     <script>
-        // Check Auth
         if (!localStorage.getItem('userId')) {
             window.location.href = 'login.html';
         }
 
-        // Setup Live Map
+        const API_BASE = 'http://localhost:5000';
+        const userId = localStorage.getItem('userId');
+
+        // Load User Stats
+        async function loadUserStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/complaints/user/${userId}`);
+                const data = await response.json();
+                
+                console.log('User Stats Response:', data); // Debug
+                
+                if (data.success && data.complaints) {
+                    const complaints = data.complaints;
+                    
+                    // Calculate stats - handle different status formats
+                    const total = complaints.length;
+                    const active = complaints.filter(c => 
+                        c.status?.toLowerCase() === 'pending' || 
+                        c.status?.toLowerCase() === 'new'
+                    ).length;
+                    const resolved = complaints.filter(c => 
+                        c.status?.toLowerCase() === 'resolved' || 
+                        c.status?.toLowerCase() === 'closed'
+                    ).length;
+                    const inProgress = complaints.filter(c => 
+                        c.status?.toLowerCase() === 'in_progress' || 
+                        c.status?.toLowerCase() === 'in progress' ||
+                        c.status?.toLowerCase() === 'processing'
+                    ).length;
+                    
+                    const resolutionRate = total > 0 ? Math.round((resolved / total) * 100) : 0;
+                    
+                    console.log('Calculated Stats:', { total, active, resolved, inProgress, resolutionRate }); // Debug
+                    
+                    // Update UI with actual data
+                    document.getElementById('stat-active').innerText = active;
+                    document.getElementById('stat-resolved').innerText = resolved;
+                    document.getElementById('stat-progress').innerText = inProgress;
+                    document.getElementById('stat-rate').innerText = resolutionRate + '%';
+                } else {
+                    console.log('No complaints found or API error');
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                // Show error but don't block UI
+                document.getElementById('stat-active').innerText = '0';
+                document.getElementById('stat-resolved').innerText = '0';
+                document.getElementById('stat-progress').innerText = '0';
+                document.getElementById('stat-rate').innerText = '0%';
+            }
+        }
+
+        // Load stats on page load
+        loadUserStats();
+
         let issuesMap;
         async function initDashboardMap() {
             try {
-                // Try to get location
                 const coords = await LocationService.getCurrentLocation(true);
                 
                 issuesMap = L.map('dummyMap').setView([coords.lat, coords.lon], 14);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(issuesMap);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(issuesMap);
 
-                // Add Dummy Live Issues
                 const dummyData = [
-                    { lat: coords.lat + 0.005, lon: coords.lon + 0.002, cat: 'Police', desc: '🚨 Minor Road Accident', color: '#4f46e5', icon: '🚨' },
-                    { lat: coords.lat - 0.003, lon: coords.lon + 0.008, cat: 'Fire', desc: '🔥 Small Fire Reported', color: '#dc2626', icon: '🔥' },
-                    { lat: coords.lat + 0.002, lon: coords.lon - 0.005, cat: 'Municipal', desc: '💧 Water Pipe Leakage', color: '#7c3aed', icon: '💧' },
-                    { lat: coords.lat - 0.006, lon: coords.lon - 0.002, cat: 'Medical', desc: '🚑 Medical Emergency', color: '#059669', icon: '🚑' }
+                    { lat: coords.lat + 0.005, lon: coords.lon + 0.002, cat: 'Police', desc: '🚨 Road Accident', color: '#0369a1', icon: '🚨' },
+                    { lat: coords.lat - 0.003, lon: coords.lon + 0.008, cat: 'Fire', desc: '🔥 Fire Alert', color: '#dc2626', icon: '🔥' },
+                    { lat: coords.lat + 0.002, lon: coords.lon - 0.005, cat: 'Municipal', desc: '💧 Water Leak', color: '#06b6d4', icon: '💧' },
+                    { lat: coords.lat - 0.006, lon: coords.lon - 0.002, cat: 'Medical', desc: '🚑 Medical Aid', color: '#059669', icon: '🚑' }
                 ];
 
                 dummyData.forEach(item => {
                     const icon = L.divIcon({
                         className: 'custom-div-icon',
-                        html: `<div style="background-color: ${item.color}; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${item.icon}</div>`,
-                        iconSize: [34, 34],
-                        iconAnchor: [17, 17]
+                        html: `<div style="background-color: ${item.color}; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: 3px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">${item.icon}</div>`,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20]
                     });
 
                     L.marker([item.lat, item.lon], { icon: icon }).addTo(issuesMap)
-                        .bindPopup(`<strong style="font-weight: 800; color: ${item.color}">${item.cat}</strong><br><span style="font-weight: 600;">${item.desc}</span>`);
+                        .bindPopup(`<strong style="color: ${item.color}; font-weight: 700;">${item.cat}</strong><br>${item.desc}`);
                 });
 
-                // Invalidate size to ensure it renders correctly
                 setTimeout(() => issuesMap.invalidateSize(), 100);
-
             } catch(e) {
-                console.error("Map load failed", e);
-                document.getElementById('dummyMap').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color: #ff0000; font-weight: bold;">Location access needed to view nearby map.</div>';
+                document.getElementById('dummyMap').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color: var(--text-dim); font-weight: 600; background: var(--bg-secondary); border-radius: 1rem;">📍 Enable location to view nearby incidents</div>';
             }
         }
 

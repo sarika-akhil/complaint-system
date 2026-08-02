@@ -7,13 +7,23 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
-        <div class="logo">Smart<span>Complaint</span> Admin</div>
-        <div class="nav-links"><a href="javascript:logout()">Logout</a></div>
+    <nav class="animate-fade">
+        <div class="logo">Smart<span>Complaint</span></div>
+        <div class="nav-links">
+            <a href="main-admin.html">Dashboard</a>
+            <a href="police-admin.html">Police</a>
+            <a href="fire-admin.html" class="active">Fire</a>
+            <a href="medical-admin.html">Medical</a>
+            <a href="municipal-admin.html">Municipal</a>
+            <a href="javascript:logout()" style="color: var(--error);">Logout</a>
+        </div>
     </nav>
 
-    <div class="container animate-fade" style="animation-delay: 0.2s;">
-        <h2 class="gradient-text" style="font-size: 2rem; margin-bottom: 2rem;">Fire & Rescue Dispatch</h2>
+    <div class="container animate-fade">
+        <div style="margin-bottom: 3rem;">
+            <h1 style="margin-bottom: 0.5rem;">🔥 Fire Services</h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Manage and respond to fire emergencies</p>
+        </div>
         <div id="adminComplaints" class="dashboard-grid"></div>
     </div>
 

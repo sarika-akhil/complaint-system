@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Smart Complaint System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .settings-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .settings-section h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-section h2 .icon {
+            font-size: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(5, 150, 105, 0.1);
+            color: #059669;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0369a1 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.7rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(3, 105, 161, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: 1.5px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 38, 38, 0.15);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        .modal-group input {
+            width: 100%;
+            padding: 0.8rem 0.95rem;
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border-light);
+            border-radius: 0.7rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .modal-group input:focus {
+            outline: none;
+            background: var(--bg-surface);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.1);
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 0.7rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-save {
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+        }
+
+        .modal-btn-save:hover {
+            box-shadow: 0 6px 20px rgba(3, 105, 161, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-cancel {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1.5px solid var(--border-light);
+        }
+
+        .modal-btn-cancel:hover {
+            background: var(--border-light);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 1rem;
+            }
+
+            .settings-section {
+                padding: 1.5rem;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="animate-fade">
+        <div class="logo">Smart<span>Complaint</span></div>
+        <div class="nav-links">
+            <a href="citizen-home.html">Home</a>
+            <a href="citizen-dashboard.html">My Reports</a>
+            <a href="citizen-analytics.html">Analytics</a>
+            <a href="settings.html" class="active">Settings</a>
+            <a href="login.html">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container animate-fade">
+        <div style="margin-bottom: 3rem;">
+            <h1>Settings</h1>
+            <p style="color: var(--text-secondary);">Manage your account and preferences</p>
+        </div>
+
+        <div class="settings-container">
+            <!-- User Profile Section -->
+            <div class="settings-section">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="userAvatar">👤</div>
+                    <div class="profile-info">
+                        <h1 id="displayName">User Name</h1>
+                        <p style="color: var(--text-dim);">Account Status: <span class="status-badge">Active</span></p>
+                        <p id="userEmail" style="margin-top: 0.5rem;">you@example.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="settings-section">
+                <h2>
+                    <span class="icon">👤</span>
+                    Personal Information
+                </h2>
+                <div class="detail-row">
+                    <span class="detail-label">User Name</span>
+                    <span class="detail-value" id="settingsUsername">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email Address</span>
+                    <span class="detail-value" id="settingsEmail">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number</span>
+                    <span class="detail-value" id="settingsPhone">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">User ID</span>
+                    <span class="detail-value" id="settingsUserId" style="font-family: monospace; font-size: 0.9rem;">-</span>
+                </div>
+            </div>
+
+            <!-- Account Statistics Section -->
+            <div class="settings-section">
+                <h2>
+                    <span class="icon">📊</span>
+                    Account Statistics
+                </h2>
+                <div class="info-grid">
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.85rem;">Member Since</p>
+                        <p style="margin: 0; color: var(--text-primary); font-weight: 700; font-size: 1.1rem;" id="memberSince">Today</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.85rem;">Total Complaints</p>
+                        <p style="margin: 0; color: var(--text-primary); font-weight: 700; font-size: 1.1rem;" id="totalComplaints">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Actions Section -->
+            <div class="settings-section">
+                <h2>
+                    <span class="icon">⚙️</span>
+                    Account Actions
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="editProfile()">Edit Profile</button>
+                    <button class="btn btn-danger" onclick="logoutUser()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Additional Info Section -->
+            <div class="settings-section" style="background: linear-gradient(135deg, rgba(3, 105, 161, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%); border: 1px solid rgba(3, 105, 161, 0.1);">
+                <h2>
+                    <span class="icon">ℹ️</span>
+                    About
+                </h2>
+                <p style="margin: 0; color: var(--text-secondary); line-height: 1.6;">
+                    Smart Complaint System v1.0<br>
+                    Built for efficient complaint management and resolution
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+
+            <form id="editForm" onsubmit="saveProfile(event)">
+                <div class="modal-group">
+                    <label for="editUsername">User Name</label>
+                    <input type="text" id="editUsername" placeholder="Enter your name" required>
+                </div>
+
+                <div class="modal-group">
+                    <label for="editEmail">Email Address</label>
+                    <input type="email" id="editEmail" placeholder="you@example.com" required>
+                </div>
+
+                <div class="modal-group">
+                    <label for="editPhone">Phone Number</label>
+                    <input type="tel" id="editPhone" placeholder="+91 98765 43210" required>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="modal-btn modal-btn-save">Save Changes</button>
+                </div>
+            </form>
+
+            <div id="editMessage" class="form-message" style="margin-top: 1.5rem;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load and display user information
+            const username = localStorage.getItem('username') || '-';
+            const email = localStorage.getItem('email') || '-';
+            const phone = localStorage.getItem('phone') || '-';
+            const userId = localStorage.getItem('userId') || '-';
+
+            // Check if user is logged in
+            if (!userId || userId === '-') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update profile header
+            document.getElementById('displayName').innerText = username;
+            document.getElementById('userEmail').innerText = email;
+            
+            // Update user avatar with first letter
+            const firstLetter = username.charAt(0).toUpperCase();
+            document.getElementById('userAvatar').innerText = firstLetter;
+            document.getElementById('userAvatar').style.fontSize = '2rem';
+
+            // Update detail rows
+            document.getElementById('settingsUsername').innerText = username;
+            document.getElementById('settingsEmail').innerText = email;
+            document.getElementById('settingsPhone').innerText = phone;
+            document.getElementById('settingsUserId').innerText = userId;
+
+            // Load complaint stats
+            loadComplaintStats();
+        });
+
+        async function loadComplaintStats() {
+            try {
+                const userId = localStorage.getItem('userId');
+                const response = await fetch(`${API_BASE}/api/complaints/user/${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.complaints) {
+                    document.getElementById('totalComplaints').innerText = data.complaints.length;
+                    
+                    // Set member since to today
+                    const today = new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    document.getElementById('memberSince').innerText = today;
+                } else {
+                    document.getElementById('totalComplaints').innerText = '0';
+                }
+            } catch (error) {
+                console.error('Error loading complaint stats:', error);
+                document.getElementById('totalComplaints').innerText = '0';
+            }
+        }
+
+        function editProfile() {
+            // Load current values into the modal
+            document.getElementById('editUsername').value = localStorage.getItem('username') || '';
+            document.getElementById('editEmail').value = localStorage.getItem('email') || '';
+            document.getElementById('editPhone').value = localStorage.getItem('phone') || '';
+            document.getElementById('editMessage').className = 'form-message';
+            document.getElementById('editMessage').innerText = '';
+            
+            // Show the modal
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editForm').reset();
+            document.getElementById('editMessage').className = 'form-message';
+            document.getElementById('editMessage').innerText = '';
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('editUsername').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+            const message = document.getElementById('editMessage');
+
+            // Validate inputs
+            if (!username || !email || !phone) {
+                message.innerText = '❌ Please fill in all fields';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                message.innerText = '❌ Please enter a valid email address';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // Phone validation (simple check)
+            const phoneRegex = /^[0-9\s\+\-\(\)]{10,}$/;
+            if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+                message.innerText = '❌ Please enter a valid phone number';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // Show saving message
+            message.innerText = '💾 Saving changes...';
+            message.className = 'form-message';
+
+            // Save to localStorage
+            setTimeout(() => {
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                localStorage.setItem('phone', phone);
+
+                // Update the display on the page
+                document.getElementById('displayName').innerText = username;
+                document.getElementById('userEmail').innerText = email;
+                document.getElementById('settingsUsername').innerText = username;
+                document.getElementById('settingsEmail').innerText = email;
+                document.getElementById('settingsPhone').innerText = phone;
+
+                // Update avatar
+                const firstLetter = username.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').innerText = firstLetter;
+
+                // Show success message
+                message.innerText = '✓ Profile updated successfully!';
+                message.className = 'form-message success';
+
+                // Close modal after 1.5 seconds
+                setTimeout(() => {
+                    closeEditModal();
+                }, 1500);
+            }, 500);
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        });
+
+        function logoutUser() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                localStorage.removeItem('phone');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

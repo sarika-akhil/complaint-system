@@ -1,5 +1,5 @@
 // API Base Configuration
-const API_BASE = window.location.port !== '5000' ? 'http://localhost:5000' : '';
+const API_BASE = 'http://localhost:5000';
 
 // Session Guard
 (function() {

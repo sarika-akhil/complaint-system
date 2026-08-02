@@ -3,91 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Complaint - Smart Complaint System</title>
+    <title>Submit Report - Smart Complaint System</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .form-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-icon {
+            font-size: 1.5rem;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed var(--border-subtle);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-secondary);
+        }
+        .file-input-wrapper:hover {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.05);
+        }
+        .file-input-wrapper input {
+            display: none;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .upload-text {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .upload-subtext {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .image-preview-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 1rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--card-shadow);
+        }
+        #map {
+            height: 350px;
+            border-radius: 1rem;
+            border: 1px solid var(--border-light);
+            margin: 1rem 0;
+        }
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .location-status.success {
+            background: rgba(5, 150, 105, 0.1);
+            color: #047857;
+        }
+    </style>
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
+    <!-- Navigation -->
+    <nav class="animate-fade">
         <div class="logo">Smart<span>Complaint</span></div>
         <div class="nav-links">
             <a href="citizen-home.html">Home</a>
-            <a href="citizen-dashboard.html">My Complaints</a>
-            <a href="report.html" class="active">Report</a>
+            <a href="citizen-dashboard.html">My Reports</a>
+            <a href="report.html" class="active">New Report</a>
+            <a href="citizen-analytics.html">Analytics</a>
+            <a href="settings.html">Settings</a>
             <a href="login.html">Logout</a>
         </div>
     </nav>
 
-    <div class="container animate-fade" style="animation-delay: 0.2s;">
-        <div class="glass-card" style="max-width: 800px; margin: 2rem auto;">
-            <h1 class="gradient-text" style="font-weight: 900; font-size: 3rem; margin-bottom: 1rem;">Report an Emergency</h1>
-            <p style="color: var(--text-primary); margin-bottom: 2.5rem; font-weight: 700; font-size: 1.1rem;">Help us help you. Provide details and your location for immediate assistance.</p>
+    <!-- Main Content -->
+    <div class="container animate-fade">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <!-- Header -->
+            <div style="margin-bottom: 3rem;">
+                <h1 style="margin-bottom: 0.5rem;">Report an Issue</h1>
+                <p style="color: var(--text-secondary); font-size: 1.05rem;">Help authorities respond faster by providing detailed information</p>
+            </div>
 
             <form id="reportForm">
-                <div class="input-group">
-                    <label for="image">Upload Photo or Capture Image</label>
-                    <input type="file" id="image" accept="image/*" capture="environment">
-                    <div id="imagePreview" style="margin-top: 1rem; display: none;">
-                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; border-radius: 0.75rem; border: 1px solid var(--border);">
+                <!-- Photo Upload Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📸</span>
+                        Photo/Evidence
+                    </div>
+                    <div class="file-input-wrapper" onclick="document.getElementById('image').click();">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Click to upload or capture photo</div>
+                        <div class="upload-subtext">PNG, JPG up to 10MB</div>
+                        <input type="file" id="image" accept="image/*" capture="environment">
+                    </div>
+                    <div class="image-preview-container" id="imagePreview">
+                        <img id="previewImg" src="" alt="Preview" class="image-preview">
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="description">What's happening?</label>
-                    <textarea id="description" rows="4" placeholder="e.g. Broken water pipe, road accident, fire near station..." required></textarea>
+                <!-- Description Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">✍️</span>
+                        Issue Details
+                    </div>
+                    <div class="input-group">
+                        <label for="description">Describe the Issue</label>
+                        <textarea id="description" rows="5" placeholder="Provide detailed description of the issue...&#10;e.g., 'Road accident at intersection, ambulance needed urgently'" required style="resize: vertical;"></textarea>
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label>Incident Location</label>
+                <!-- Location Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">📍</span>
+                        Incident Location
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.95rem;">Click on the map to pinpoint the exact location of the incident</p>
                     <div id="map"></div>
-                    <p id="locationStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Fetching GPS...</p>
+                    <div id="locationStatus" class="location-status">
+                        <span>🔄</span>
+                        <span>Fetching your location...</span>
+                    </div>
                 </div>
 
-                <div style="margin-top: 1rem;">
-                    <button type="button" id="submitBtn" class="btn btn-primary" style="width: 100%;">Submit Report</button>
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem;">
+                    <a href="citizen-home.html" class="btn btn-outline" style="flex: 1; text-align: center;">Cancel</a>
+                    <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">Submit Report</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Issues Modal -->
-    <div id="issuesModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
-        <div class="glass-card" style="width: 90%; max-width: 900px; padding: 1.5rem; position: relative; background: white;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="font-weight: 900; color: var(--text-primary);">Live Incident Map (Dummy)</h2>
-                <button onclick="closeIssuesModal()" class="btn" style="padding: 0.5rem; background: #fee2e2; color: #dc2626; min-width: 40px;">&times;</button>
-            </div>
-            <div id="dummyMap" style="height: 500px; border-radius: 1rem; border: 1px solid var(--border-light);"></div>
-            <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 600;">Showing active reports in your vicinity. Stay safe!</p>
-        </div>
-    </div>
-
     <!-- Success Modal -->
-    <div id="successModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
-        <div class="glass-card animate-fade" style="width: 90%; max-width: 450px; padding: 2.5rem; text-align: center; background: white;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
-            <h2 style="font-weight: 900; color: var(--text-primary); margin-bottom: 0.5rem;">Report Submitted</h2>
-            <p id="successMainMessage" style="color: var(--text-secondary); margin-bottom: 2rem; font-weight: 500;">Your emergency request has been routed to the appropriate authorities.</p>
+    <div id="successModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
+        <div class="glass-card animate-fade" style="width: 90%; max-width: 500px; padding: 3rem 2rem; text-align: center; background: white; border-radius: 1.5rem;">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">✅</div>
+            <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.75rem;">Report Submitted!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1rem; line-height: 1.6;">Your report has been received and is being routed to the appropriate authorities for immediate action.</p>
             
-            <div style="background: var(--bg-body); padding: 1.5rem; border-radius: 1rem; text-align: left; margin-bottom: 2rem; border: 1px solid var(--border-light);">
-                <div style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
-                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;">Incident Details</span>
-                    <div id="successDesc" style="color: var(--text-primary); font-weight: 600; font-size: 1.1rem; margin-top: 0.25rem;"></div>
+            <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 1rem; text-align: left; margin-bottom: 2rem; border: 1px solid var(--border-light);">
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light);">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Report ID</span>
+                    <div id="successId" style="color: var(--primary); font-weight: 700; font-size: 1rem; margin-top: 0.5rem; font-family: monospace;"></div>
                 </div>
-                <div style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
-                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;" id="successStationTitle">Nearest Station</span>
-                    <div id="successStationName" style="color: var(--primary); font-weight: 800; font-size: 1rem; margin-top: 0.25rem;"></div>
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light);">
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Assigned Department</span>
+                    <div id="successDept" style="color: var(--text-primary); font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem;"></div>
                 </div>
                 <div>
-                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;">Distance</span>
-                    <div id="successDistance" style="color: var(--error); font-weight: 800; font-size: 1rem; margin-top: 0.25rem;"></div>
+                    <span style="color: var(--text-dim); font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Estimated Response</span>
+                    <div id="successTime" style="color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem;"></div>
                 </div>
             </div>
 
-            <button onclick="document.getElementById('successModal').style.display='none'; document.getElementById('reportForm').reset();" class="btn btn-primary" style="width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: none; cursor: pointer;">Okay, Got it</button>
+            <div style="background: rgba(5, 150, 105, 0.1); border-left: 4px solid #059669; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; text-align: left;">
+                <p style="color: #047857; font-size: 0.9rem; margin: 0;"><strong>📱 Track your report:</strong> You can track the status of your report anytime from your dashboard.</p>
+            </div>
+
+            <button onclick="window.location.href='citizen-home.html';" class="btn btn-primary" style="width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
+                Go to Dashboard
+            </button>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/location.js"></script>
     <script src="js/report.js"></script>

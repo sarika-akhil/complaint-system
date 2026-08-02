@@ -5,79 +5,335 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Smart Complaint System</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-main);
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.5s ease;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-light);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(135deg, #0369a1 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .form-tabs {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 1rem;
+        }
+
+        .form-tabs button {
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .form-tabs button.active {
+            color: var(--primary);
+        }
+
+        .form-tabs button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 0.95rem;
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border-light);
+            border-radius: 0.7rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: var(--bg-surface);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            color: white;
+            border: none;
+            border-radius: 0.7rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 6px 20px rgba(3, 105, 161, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: opacity 0.2s;
+        }
+
+        .form-footer a:hover {
+            opacity: 0.8;
+        }
+
+        .form-message {
+            margin-top: 1rem;
+            padding: 0.9rem;
+            border-radius: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .form-message.error {
+            display: block;
+            background: rgba(220, 38, 38, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .form-message.success {
+            display: block;
+            background: rgba(5, 150, 105, 0.1);
+            color: #047857;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        #otp-section {
+            display: none;
+        }
+
+        #otp-section.show {
+            display: block;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .login-footer a {
+            cursor: pointer;
+            color: var(--primary);
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+        .login-footer a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 640px) {
+            .login-container {
+                padding: 1.5rem;
+            }
+
+            .login-wrapper {
+                max-width: 100%;
+            }
+
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .login-header p {
+                font-size: 0.9rem;
+            }
+
+            .form-tabs {
+                gap: 1.5rem;
+            }
+
+            .form-group input {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
-        <div class="logo">Smart <span>Complaint Management</span></div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="login.html" class="active">Login</a>
-        </div>
-    </nav>
-
-    <div class="login-split-container">
-        <!-- Left Side: Brand Experience -->
-        <div class="login-right animate-fade" style="animation-delay: 0.1s; border-right: 1px solid var(--border-light);">
-            <div class="brand-content" style="margin-top: -10vh;">
-                <h1>Smart <span>Complaint Management</span></h1>
-                <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); max-width: 500px; margin-top: 1.5rem; line-height: 1.6; letter-spacing: -0.01em;">
-                    It is a digital platform where citizens can easily report problems or complaints to authorities using their mobile number.
-                </p>
+    <div class="login-container">
+        <div class="login-wrapper">
+            <!-- Header -->
+            <div class="login-header">
+                <h1>Smart Complaint System</h1>
+                <p>Quick and efficient complaint management</p>
             </div>
-        </div>
 
-        <!-- Right Side: Login Hub -->
-        <div class="login-left" style="background: transparent;">
-            <div class="glass-card animate-fade" style="width: 100%; max-width: 440px; animation-delay: 0.3s; padding: 2.5rem;">
-                <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                    <button onclick="showTab('citizen')" id="tab-citizen" class="btn" style="background: none; color: var(--primary); padding: 0.75rem 0; border-bottom: 2px solid var(--primary); border-radius: 0; font-size: 0.9rem; font-weight: 700; flex: 1;">Citizen Portal</button>
-                    <button onclick="showTab('admin')" id="tab-admin" class="btn" style="background: none; color: #64748b; padding: 0.75rem 0; border-radius: 0; font-size: 0.9rem; font-weight: 700; flex: 1;">Authority Access</button>
+            <!-- Form Tabs -->
+            <div class="form-tabs">
+                <button class="active" onclick="switchAuthTab('citizen')">Citizen</button>
+                <button onclick="switchAuthTab('admin')">Authority</button>
+            </div>
+
+            <!-- Citizen Login Form -->
+            <form id="citizenForm" class="form-content active">
+                <div class="form-group">
+                    <label for="username">User Name</label>
+                    <input type="text" id="username" placeholder="Enter your name" required>
                 </div>
 
-                <!-- Form Sections -->
-                <div class="form-scroll">
-                    <form id="loginForm">
-                        <h2 style="font-size: 2rem; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.02em;">Welcome Back</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 0.95rem;">Authenticate with your phone number to proceed.</p>
-                        
-                        <div class="input-group">
-                            <label>Phone Number</label>
-                            <input type="tel" id="phone" placeholder="+91 98765 43210" required style="height: 52px;">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label>Email Address</label>
-                            <input type="email" id="email" placeholder="you@example.com" required style="height: 52px;">
-                        </div>
-                        
-                        <div id="otpSection" style="display: none;" class="animate-fade">
-                            <div class="input-group">
-                                <label>Verification Code</label>
-                                <input type="text" id="otp" placeholder="Enter 6-digit OTP" style="height: 52px;">
-                            </div>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; height: 56px; margin-top: 1rem; font-size: 1rem;">Authorize Entry</button>
-                    </form>
-
-                    <form id="adminLoginForm" style="display: none;">
-                        <h2 style="font-size: 2rem; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.02em;">Official Portal</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 0.95rem;">Secure authentication for personnel.</p>
-                        
-                        <div class="input-group">
-                            <label>System Username</label>
-                            <input type="text" id="username" placeholder="Enter ID" required style="height: 52px;">
-                        </div>
-                        <div class="input-group">
-                            <label>Access Key</label>
-                            <input type="password" id="password" placeholder="••••••••" required style="height: 52px;">
-                        </div>
-
-                        <button type="submit" id="adminSubmitBtn" class="btn btn-primary" style="width: 100%; height: 56px; margin-top: 1rem; font-size: 1rem;">Secure Login</button>
-                    </form>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+91 98765 43210" required>
                 </div>
 
-                <p id="msg" style="margin-top: 1.5rem; text-align: center; color: var(--error); font-size: 0.85rem; font-weight: 500;"></p>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+
+                <div id="otp-section">
+                    <div class="form-group">
+                        <label for="otp">Verification Code</label>
+                        <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Continue</button>
+                <div id="msg" class="form-message"></div>
+
+                <div class="form-footer">
+                    <small style="color: var(--text-dim); display: block; margin-top: 1rem;">Test Users: +919876543210 or +919876543211</small>
+                </div>
+            </form>
+
+            <!-- Admin Login Form -->
+            <form id="adminForm" class="form-content">
+                <div class="form-group">
+                    <label for="adminUsername">Employee ID</label>
+                    <input type="text" id="adminUsername" placeholder="Enter your employee ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Sign In</button>
+                <div id="adminMsg" class="form-message"></div>
+
+                <div class="form-footer">
+                    <a href="#">Forgot password?</a>
+                </div>
+            </form>
+
+            <!-- Footer Info -->
+            <div class="login-footer">
+                🔒 Your data is secure and encrypted
             </div>
         </div>
     </div>
@@ -88,5 +344,25 @@
     
     <script src="js/location.js"></script>
     <script src="js/auth.js"></script>
+
+    <script>
+        function switchAuthTab(tab) {
+            const citizenForm = document.getElementById('citizenForm');
+            const adminForm = document.getElementById('adminForm');
+            const tabs = document.querySelectorAll('.form-tabs button');
+            
+            if (tab === 'citizen') {
+                citizenForm.classList.add('active');
+                adminForm.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                citizenForm.classList.remove('active');
+                adminForm.classList.add('active');
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>

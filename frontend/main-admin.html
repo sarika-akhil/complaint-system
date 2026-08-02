@@ -3,68 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Admin - Monitoring System</title>
+    <title>Admin Dashboard - Smart Complaint System</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .metric-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .department-section {
+            margin-bottom: 3rem;
+        }
+        .department-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .department-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        .department-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+    </style>
 </head>
 <body>
-    <nav class="animate-fade" style="animation-delay: 0.1s;">
-        <div class="logo">Smart<span>Complaint</span> Admin</div>
-        <div class="nav-links"><a href="javascript:logout()">Logout</a></div>
+    <!-- Navigation -->
+    <nav class="animate-fade">
+        <div class="logo">Smart<span>Complaint</span></div>
+        <div class="nav-links">
+            <a href="main-admin.html" class="active">Dashboard</a>
+            <a href="police-admin.html">Police</a>
+            <a href="fire-admin.html">Fire</a>
+            <a href="medical-admin.html">Medical</a>
+            <a href="municipal-admin.html">Municipal</a>
+            <a href="javascript:logout()" style="color: var(--error);">Logout</a>
+        </div>
     </nav>
 
-    <div class="container animate-fade" style="animation-delay: 0.2s;">
+    <!-- Main Content -->
+    <div class="container animate-fade">
+        <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
             <div>
-                <h2 class="gradient-text" style="font-size: 2.25rem;">Command Center</h2>
-                <p style="color: var(--text-secondary);">Real-time monitoring of all active incidents and citizen reports.</p>
-            </div>
-            <div id="stats">
-                <div class="glass-card" style="padding: 1rem 2rem; text-align: center;">
-                    <small style="color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem;">Total Pulse</small>
-                    <div id="totalCount" style="font-size: 2rem; font-weight: 800; color: var(--primary);">--</div>
-                </div>
+                <h1 style="margin-bottom: 0.5rem;">Command Center</h1>
+                <p style="color: var(--text-secondary); font-size: 1.05rem;">Real-time monitoring of all emergency reports</p>
             </div>
         </div>
 
-        <div id="policeSection" class="category-section animate-fade" style="display: none; margin-bottom: 3rem;">
-            <h3 class="category-title" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                <span style="background: var(--primary); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1rem;">🛡️</span> 
-                Police Incidents
-            </h3>
+        <!-- Quick Metrics -->
+        <div class="quick-stats">
+            <div class="metric-card">
+                <div class="metric-label">Total Reports</div>
+                <div class="metric-value" id="totalCount">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Active</div>
+                <div class="metric-value" id="activeCount" style="color: var(--warning);">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">In Progress</div>
+                <div class="metric-value" id="progressCount" style="color: var(--accent);">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Resolved</div>
+                <div class="metric-value" id="resolvedCount" style="color: var(--success);">-</div>
+            </div>
+        </div>
+
+        <!-- Police Section -->
+        <div id="policeSection" class="department-section animate-fade" style="display: none;">
+            <div class="department-header">
+                <div class="department-icon" style="background: linear-gradient(135deg, #0369a1, #0284c7);">🛡️</div>
+                <div class="department-title">Police Incidents</div>
+            </div>
             <div id="policeComplaints" class="dashboard-grid"></div>
         </div>
 
-        <div id="municipalSection" class="category-section animate-fade" style="display: none; margin-bottom: 3rem; animation-delay: 0.1s;">
-            <h3 class="category-title" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                <span style="background: var(--secondary); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1rem;">🏘️</span> 
-                Municipal Issues
-            </h3>
-            <div id="municipalComplaints" class="dashboard-grid"></div>
+        <!-- Fire Section -->
+        <div id="fireSection" class="department-section animate-fade" style="display: none; animation-delay: 0.1s;">
+            <div class="department-header">
+                <div class="department-icon" style="background: linear-gradient(135deg, #dc2626, #991b1b);">🔥</div>
+                <div class="department-title">Fire Services</div>
+            </div>
+            <div id="fireComplaints" class="dashboard-grid"></div>
         </div>
 
-        <div id="medicalSection" class="category-section animate-fade" style="display: none; margin-bottom: 3rem; animation-delay: 0.2s;">
-            <h3 class="category-title" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                <span style="background: var(--error); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1rem;">🚑</span> 
-                Medical Emergencies
-            </h3>
+        <!-- Medical Section -->
+        <div id="medicalSection" class="department-section animate-fade" style="display: none; animation-delay: 0.2s;">
+            <div class="department-header">
+                <div class="department-icon" style="background: linear-gradient(135deg, #059669, #047857);">🚑</div>
+                <div class="department-title">Medical Emergencies</div>
+            </div>
             <div id="medicalComplaints" class="dashboard-grid"></div>
+        </div>
+
+        <!-- Municipal Section -->
+        <div id="municipalSection" class="department-section animate-fade" style="display: none; animation-delay: 0.3s;">
+            <div class="department-header">
+                <div class="department-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🏘️</div>
+                <div class="department-title">Municipal Services</div>
+            </div>
+            <div id="municipalComplaints" class="dashboard-grid"></div>
         </div>
     </div>
 
     <script src="js/admin.js"></script>
     <script>
-        loadAdminComplaints();
-        
         async function updateStats() {
             try {
                 const response = await fetch(API_BASE + '/api/admin/complaints');
                 const data = await response.json();
-                document.getElementById('totalCount').innerText = data.complaints.length;
+                
+                const complaints = data.complaints || [];
+                const total = complaints.length;
+                const pending = complaints.filter(c => c.status === 'Pending').length;
+                const progress = complaints.filter(c => c.status === 'In Progress').length;
+                const resolved = complaints.filter(c => c.status === 'Resolved').length;
+                
+                document.getElementById('totalCount').innerText = total;
+                document.getElementById('activeCount').innerText = pending;
+                document.getElementById('progressCount').innerText = progress;
+                document.getElementById('resolvedCount').innerText = resolved;
             } catch (err) {
-                console.error("Pulse error:", err);
+                console.error("Stats error:", err);
             }
         }
+        
         updateStats();
+        loadAdminComplaints();
     </script>
 </body>
 </html>
