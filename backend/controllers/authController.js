@@ -13,7 +13,12 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendOtp = async (req, res) => {
+    console.log("========== sendOtp route reached ==========");
+
     const { phone, email } = req.body;
+
+    console.log("Phone:", phone);
+    console.log("Email:", email);
 
     if (!phone || !email) {
         return res.status(400).json({
@@ -24,25 +29,40 @@ exports.sendOtp = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    console.log("Generated OTP:", otp);
+
     otpStore.set(email, {
         otp,
         phone,
         expiresAt: Date.now() + 5 * 60 * 1000
     });
 
-    try {
-        console.log("sendOtp route reached");
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your Login OTP for Smart Complaint System',
+        text: `Your OTP is ${otp}`
+    };
 
-        // TEMPORARY: Skip sending email
-        // await transporter.sendMail(mailOptions);
+    try {
+        console.log("Sending email...");
+        console.log("EMAIL_USER:", process.env.EMAIL_USER);
+        console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+
+        const info = await transporter.sendMail(mailOptions);
+
+        console.log("EMAIL SENT SUCCESSFULLY");
+        console.log(info);
 
         return res.json({
             success: true,
-            message: "OTP sent (TEST MODE)"
+            message: "OTP sent successfully"
         });
 
     } catch (error) {
+        console.error("EMAIL ERROR START");
         console.error(error);
+        console.error("EMAIL ERROR END");
 
         return res.status(500).json({
             success: false,
