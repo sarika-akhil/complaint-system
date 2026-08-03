@@ -11,11 +11,15 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 exports.sendOtp = async (req, res) => {
-    console.log("========== sendOtp route reached ==========");
+    console.log("========== sendOtp ==========");
 
     const { phone, email } = req.body;
 
@@ -25,7 +29,7 @@ exports.sendOtp = async (req, res) => {
     if (!phone || !email) {
         return res.status(400).json({
             success: false,
-            message: 'Phone and Email are required.'
+            message: "Phone and Email are required."
         });
     }
 
@@ -42,14 +46,19 @@ exports.sendOtp = async (req, res) => {
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'Your Login OTP for Smart Complaint System',
-        text: `Your OTP is ${otp}`
+        subject: "Smart Complaint System OTP",
+        text: `Your OTP is ${otp}. It expires in 5 minutes.`
     };
 
     try {
+
+        console.log("Checking SMTP connection...");
+
+        await transporter.verify();
+
+        console.log("SMTP VERIFIED");
+
         console.log("Sending email...");
-        console.log("EMAIL_USER:", process.env.EMAIL_USER);
-        console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
 
         const info = await transporter.sendMail(mailOptions);
 
@@ -62,9 +71,14 @@ exports.sendOtp = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("EMAIL ERROR START");
-        console.error(error);
-        console.error("EMAIL ERROR END");
+
+        console.log("========== SMTP ERROR ==========");
+        console.log("Name:", error.name);
+        console.log("Code:", error.code);
+        console.log("Command:", error.command);
+        console.log("Message:", error.message);
+        console.log(error);
+        console.log("================================");
 
         return res.status(500).json({
             success: false,
@@ -81,7 +95,7 @@ exports.verifyOtp = async (req, res) => {
     if (!record || record.otp !== otp || record.phone !== phone) {
         return res.status(400).json({
             success: false,
-            message: 'Invalid OTP or incorrect details.'
+            message: "Invalid OTP or incorrect details."
         });
     }
 
@@ -90,11 +104,12 @@ exports.verifyOtp = async (req, res) => {
 
         return res.status(400).json({
             success: false,
-            message: 'OTP has expired.'
+            message: "OTP has expired."
         });
     }
 
     try {
+
         const userId = await User.createOrUpdate(
             phone,
             email,
@@ -110,11 +125,12 @@ exports.verifyOtp = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
             success: false,
-            message: 'Login failed due to database error.'
+            message: "Login failed due to database error."
         });
     }
 };
@@ -123,6 +139,7 @@ exports.login = async (req, res) => {
     const { phone, email, latitude, longitude } = req.body;
 
     try {
+
         const userId = await User.createOrUpdate(
             phone,
             email,
@@ -136,28 +153,31 @@ exports.login = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
             success: false,
-            message: 'Login failed'
+            message: "Login failed"
         });
     }
 };
 
 exports.lookupUser = async (req, res) => {
+
     const { email } = req.query;
 
     if (!email) {
         return res.status(400).json({
             success: false,
-            message: 'Email required'
+            message: "Email required"
         });
     }
 
     try {
-        const [rows] = await require('../config/db').execute(
-            'SELECT id FROM users WHERE email = ?',
+
+        const [rows] = await require("../config/db").execute(
+            "SELECT id FROM users WHERE email = ?",
             [email]
         );
 
@@ -169,16 +189,17 @@ exports.lookupUser = async (req, res) => {
         } else {
             res.status(404).json({
                 success: false,
-                message: 'User not found'
+                message: "User not found"
             });
         }
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
             success: false,
-            message: 'Lookup failed'
+            message: "Lookup failed"
         });
     }
 };
