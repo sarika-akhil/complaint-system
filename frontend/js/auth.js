@@ -9,8 +9,9 @@ const makeAPI = async (endpoint, options = {}) => {
     console.log('API Response:', response.status, response.statusText);
     return response;
   } catch (error) {
-    console.error(`API Error: ${endpoint}`, error.message);
-    throw new Error('Backend Connection Failed: Is the server running on port 5000?');
+    console.error("Full API Error:", error);
+    console.error("Message:", error.message);
+    throw error;
   }
 };
 
